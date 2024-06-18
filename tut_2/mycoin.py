@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 class Blockchain :
     def __init__(self) :
         self.chain = []
+        self.transactions = []
         self.create_block(proof=1, prvs_hash='0')
 
     def create_block(self,proof,prvs_hash) :
@@ -16,8 +17,10 @@ class Blockchain :
             'index' : len(self.chain)+1,
             'timestamp': str(datetime.datetime.now()),
             'proof': proof,
-            'prvs_hash': prvs_hash
+            'prvs_hash': prvs_hash,
+            'transactions': self.transactions
         }
+        self.transactions = []
         self.chain.append(block)
         return block
     
@@ -54,6 +57,15 @@ class Blockchain :
             prvs_block = block
             block_index += 1
         return True
+    
+    def add_transaction(self, sender, receiver, amount):
+        self.transactions.append9({
+            'sender': sender,
+            'receiver': receiver,
+            'amount': amount
+        })
+        prvs_block = self.get_prvs_block()
+        return prvs_block['index'] + 1
     
 app = Flask(__name__)
 
