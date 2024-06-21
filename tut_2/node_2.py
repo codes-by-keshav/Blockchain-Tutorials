@@ -59,8 +59,11 @@ class Blockchain :
             block_index += 1
         return True
     
+    def get_nodes(self):
+        return list(self.nodes)
+    
     def add_transaction(self, sender, receiver, amount):
-        self.transactions.append9({
+        self.transactions.append({
             'sender': sender,
             'receiver': receiver,
             'amount': amount
@@ -68,7 +71,7 @@ class Blockchain :
         prvs_block = self.get_prvs_block()
         return prvs_block['index'] + 1
     
-    def add_nodes(self,address):
+    def add_node(self,address):
         parsed_url= urlparse(address)
         self.nodes.add(parsed_url.netloc)
 
@@ -101,7 +104,7 @@ def mine_block():
     prvs_proof = prvs_block['proof']
     proof = myblockchain.proof_of_work(prvs_proof)
     prvs_hash = myblockchain.hash(prvs_block)
-    myblockchain.add_transaction(sender=node_address, receiver='Keshav', amount=10)
+    myblockchain.add_transaction(sender=node_address, receiver='Keshav_ka_beta', amount=10)
     block = myblockchain.create_block(proof, prvs_hash)
     current_block_hash = myblockchain.hash(block)
     response = {
@@ -117,16 +120,19 @@ def mine_block():
 
 @app.route('/get_chain', methods=['GET'])
 def get_chain():
-    chain_with_hashes = []
-    for block in myblockchain.chain:
-        block_with_hash = block.copy()
-        block_with_hash['current_hash'] = myblockchain.hash(block)
-        chain_with_hashes.append(block_with_hash)
+    # chain_with_hashes = []
+    # for block in myblockchain.chain:
+    #     block_with_hash = block.copy()
+    #     block_with_hash['current_hash'] = myblockchain.hash(block)
+    #     chain_with_hashes.append(block_with_hash)
     
-    response = {
-        'chain': chain_with_hashes,
-        'length': len(myblockchain.chain)
-    }
+    # response = {
+    #     'chain': chain_with_hashes,
+    #     'length': len(myblockchain.chain)
+    # }
+    # return jsonify(response), 200
+    response = {'chain': myblockchain.chain,
+                'length': len(myblockchain.chain)}
     return jsonify(response), 200
 
 @app.route('/is_valid', methods=['GET'])
@@ -159,7 +165,7 @@ def connect_node():
     if nodes is None:
         return 'No node', 400
     for node in nodes:
-        myblockchain.add_nodes(node)
+        myblockchain.add_node(node)
     response = {
         'message': 'All the nodes are now connected. The MyCoin Blockchain now contains the following nodes:',
         'total_nodes': list(myblockchain.nodes)
@@ -181,6 +187,16 @@ def replace_chain():
         }
     return jsonify(response), 200
 
+@app.route('/get_nodes', methods=['GET'])
+def get_nodes():
+    nodes = myblockchain.get_nodes()
+    response = {
+        'nodes': nodes,
+        'total_nodes': len(nodes)
+    }
+    return jsonify(response), 200
 
 
-app.run(host='0.0.0.0', port=5000)
+
+
+app.run(host='0.0.0.0', port=5002)
